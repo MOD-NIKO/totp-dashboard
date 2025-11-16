@@ -11,7 +11,7 @@ import UserRegisterPage from "./pages/UserRegisterPage";
 import AdminRegisterPage from "./pages/AdminRegisterPage";
 import { Toaster } from "./components/ui/sonner";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://your-render-backend-url.onrender.com";
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "https://totp-dashboard.onrender.com";
 export const API = `${BACKEND_URL}/api`;
 
 export const axiosInstance = axios.create({
