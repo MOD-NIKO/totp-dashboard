@@ -9,7 +9,7 @@ A full-stack web application for generating Time-based One-Time Password (TOTP) 
 - **TOTP Token Generation**: Generate secure TOTP tokens with configurable bit sizes (128-1024 bits)
 - **Token Logging**: Comprehensive logging of all token generation activities
 - **Role-based Access**: Separate interfaces for users and administrators
-- **MongoDB Integration**: Cloud-ready database with MongoDB Atlas support
+- **Firebase Integration**: Serverless backend with Firestore database and Firebase Hosting
 
 ## Tech Stack
 
@@ -27,12 +27,17 @@ A full-stack web application for generating Time-based One-Time Password (TOTP) 
 - Bcrypt for password hashing
 - Pydantic for data validation
 
+### Hosting
+- **Frontend:** Vercel (Free tier)
+- **Backend:** Render (Free tier)
+- **Database:** MongoDB Atlas (Free tier)
+
 ## Local Development Setup
 
 ### Prerequisites
 - Node.js (v16 or higher)
 - Python (v3.8 or higher)
-- MongoDB (local or Atlas)
+- MongoDB Atlas account (free)
 
 ### Installation
 
@@ -55,7 +60,7 @@ A full-stack web application for generating Time-based One-Time Password (TOTP) 
    ```
 
 4. **Environment Configuration**
-   - Copy `backend/.env` and update MongoDB connection string
+   - Copy `backend/.env` and update MongoDB Atlas connection string
    - Update `frontend/.env` with backend URL
 
 5. **Start Services**
@@ -98,33 +103,42 @@ A full-stack web application for generating Time-based One-Time Password (TOTP) 
 
 ## Deployment
 
-### Backend Deployment (Railway)
-1. Connect GitHub repository to Railway
-2. Set environment variables in Railway dashboard
-3. Deploy automatically on push
+### Database Setup (MongoDB Atlas)
+1. Create a free account at [MongoDB Atlas](https://www.mongodb.com/atlas)
+2. Create a new cluster (free tier)
+3. Create a database user and get connection string
+4. Whitelist your IP or allow access from anywhere (0.0.0.0/0)
 
-### Frontend Deployment (Netlify)
-1. Build command: `npm run build`
-2. Publish directory: `build`
-3. Set environment variables for API URL
+### Backend Deployment (Render)
+1. Create a free account at [Render](https://render.com)
+2. Connect your GitHub repository
+3. Create a new Web Service
+4. Set build command: `pip install -r requirements.txt`
+5. Set start command: `uvicorn server:app --host 0.0.0.0 --port $PORT`
+6. Add environment variables:
+   - `MONGO_URL`: Your MongoDB Atlas connection string
+   - `DB_NAME`: `totp_database`
+   - `CORS_ORIGINS`: Your Vercel frontend URL (after deployment)
 
-### Database (MongoDB Atlas)
-1. Create Atlas cluster
-2. Get connection string
-3. Update environment variables
+### Frontend Deployment (Vercel)
+1. Create a free account at [Vercel](https://vercel.com)
+2. Connect your GitHub repository
+3. Deploy the frontend (it will auto-detect React)
+4. Add environment variable:
+   - `REACT_APP_BACKEND_URL`: Your Render backend URL
 
 ## Environment Variables
 
 ### Backend (.env)
 ```
-MONGO_URL=mongodb+srv://...
+MONGO_URL=mongodb+srv://username:password@cluster.mongodb.net/?retryWrites=true&w=majority
 DB_NAME=totp_database
-CORS_ORIGINS=https://your-frontend-domain.com
+CORS_ORIGINS=https://your-frontend-domain.vercel.app
 ```
 
 ### Frontend (.env)
 ```
-REACT_APP_BACKEND_URL=https://your-backend-url.com
+REACT_APP_BACKEND_URL=https://your-render-backend-url.onrender.com
 ```
 
 ## Contributing
@@ -142,7 +156,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## Security Notes
 
 - Change default admin credentials in production
-- Use HTTPS in production
+- Use HTTPS in production (automatically provided by Vercel and Render)
 - Regularly update dependencies
 - Monitor token generation logs
 - Implement rate limiting for API endpoints
