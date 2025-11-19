@@ -13,6 +13,9 @@ import pyotp
 import bcrypt
 import time
 import secrets
+from sympy import nextprime
+from hashlib import sha256
+import base64
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
@@ -29,6 +32,24 @@ app = FastAPI()
 api_router = APIRouter(prefix="/api")
 
 class TOTPModel:
+    @staticmethod
+    def generate_secret_from_password_hash(password_hash: str) -> str:
+        # Use the encrypted password hash as seed for TOTP secret
+        # Extract the ciphertext part (first part before first colon)
+        ciphertext = password_hash.split(':')[0]
+
+        # Hash the ciphertext to create a deterministic secret
+        secret_hash = sha256(ciphertext.encode()).digest()
+
+        # Convert to base32 for TOTP
+        secret_b32 = base64.b32encode(secret_hash).decode('utf-8').rstrip('=')
+
+        # Ensure it's at least 32 characters (160 bits)
+        while len(secret_b32) < 32:
+            secret_b32 += secret_b32
+
+        return secret_b32[:32]
+
     @staticmethod
     def generate_secret(bit_size: int = 128) -> str:
         byte_size = bit_size // 8

@@ -10,3 +10,4 @@ python-multipart==0.0.6
 starlette==0.41.3
 email-validator==2.3.0
 dnspython==2.6.1
+sympy==1.13.3
