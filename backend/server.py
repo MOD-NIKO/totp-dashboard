@@ -277,7 +277,10 @@ async def login_admin(login: AdminLogin):
 async def get_token_logs():
     logs = []
     async for log in db.token_logs.find().sort("created_at", -1):
-        logs.append(log)
+        log_data = {k: v for k, v in log.items()}
+        if '_id' in log_data:
+            log_data['id'] = str(log_data.pop('_id'))
+        logs.append(log_data)
 
     return logs
 
@@ -325,7 +328,10 @@ async def regenerate_token(data: dict):
 async def get_pending_registrations():
     pending = []
     async for reg in db.pending_registrations.find().sort("created_at", -1):
-        pending.append(reg)
+        reg_data = {k: v for k, v in reg.items()}
+        if '_id' in reg_data:
+            reg_data['id'] = str(reg_data.pop('_id'))
+        pending.append(reg_data)
 
     return pending
 
@@ -368,6 +374,8 @@ async def get_all_users():
     async for user in db.users.find().sort("created_at", -1):
         # Remove password hash from response
         user_data = {k: v for k, v in user.items() if k != 'password_hash'}
+        if '_id' in user_data:
+            user_data['id'] = str(user_data.pop('_id'))
         users.append(user_data)
 
     return users
@@ -460,7 +468,10 @@ async def register_admin(data: dict):
 async def get_pending_admin_registrations():
     pending = []
     async for reg in db.pending_admin_registrations.find().sort("created_at", -1):
-        pending.append(reg)
+        reg_data = {k: v for k, v in reg.items()}
+        if '_id' in reg_data:
+            reg_data['id'] = str(reg_data.pop('_id'))
+        pending.append(reg_data)
 
     return pending
 
