@@ -13,7 +13,6 @@ import pyotp
 import bcrypt
 import time
 import secrets
-from sympy import nextprime
 from hashlib import sha256
 import base64
 
@@ -21,9 +20,12 @@ ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
 # MongoDB connection
-mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url, tls=True)
-db = client[os.environ['DB_NAME']]
+mongo_url = os.environ.get('MONGO_URL', 'mongodb+srv://aldringorit2008_db_user:AJhay2008@cluster0.tk860ik.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0')
+
+# Motor handles TLS automatically when using mongodb+srv://
+client = AsyncIOMotorClient(mongo_url)
+
+db = client[os.environ.get('DB_NAME', 'totp_database')]
 
 # Create the main app without a prefix
 app = FastAPI()
