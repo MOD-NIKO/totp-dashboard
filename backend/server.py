@@ -526,6 +526,11 @@ async def init_super_admin():
         "admin_access_password": "ADMIN_ACCESS_2025"
     }
 
+# Root route
+@app.get("/")
+async def root():
+    return {"message": "TOTP Dashboard API", "version": "1.0.0", "docs": "/docs"}
+
 # Include the router in the main app
 app.include_router(api_router)
 
