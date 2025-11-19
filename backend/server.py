@@ -61,6 +61,11 @@ class TOTPModel:
         return totp.now()
 
     @staticmethod
+    def verify_token(secret: str, token: str) -> bool:
+        totp = pyotp.TOTP(secret)
+        return totp.verify(token)
+
+    @staticmethod
     def get_remaining_time() -> int:
         return 30 - (int(time.time()) % 30)
 
@@ -524,6 +529,22 @@ async def init_super_admin():
         "email": "superadmin@totp.com",
         "password": "SuperAdmin@2025",
         "admin_access_password": "ADMIN_ACCESS_2025"
+    }
+
+# Verify PIN code
+@api_router.post("/verify-pin")
+async def verify_pin(data: dict):
+    secret = data.get('secret')
+    pin = data.get('pin')
+
+    if not secret or not pin:
+        raise HTTPException(status_code=400, detail="Secret and PIN are required")
+
+    is_valid = TOTPModel.verify_token(secret, pin)
+
+    return {
+        "valid": is_valid,
+        "message": "PIN verified successfully" if is_valid else "Invalid PIN"
     }
 
 # Root route
